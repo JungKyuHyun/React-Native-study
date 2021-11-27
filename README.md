@@ -139,3 +139,109 @@ const onPress = () => {
 - 공통: done (완료), go (이동), next (다음), search (검색), send (보내기)
 - IOS 전용: default (기본), emergency-call (긴급 통화), google (검색), join (가입), route (이동), yahoo (검색)
 - Android 전용: none (일반 Enter), previous (뒤로)
+
+## 항목 사이에 구분선 보여주는 방법
+
+웹에서 사용하던 `& + &` 셀렉터의 기능이 RN에는 존재하지 않는다. `<FlatList />`에서는 `ItemSeparatorComponent`를 이용하여 구분선을 만들 수 있다.
+
+```javascript
+// TodoList.js
+<FlatList
+  ItemSeparatorComponent={() => <View style={styles.separator} />}
+  // ...
+/>
+...
+const styles = StyleSheet.create({
+  // ...,
+  separator: {
+    backgroundColor: '#e0e0e0',
+    height: 1,
+  },
+});
+```
+
+## 안드로이드 시뮬레이터에서 한글 키보드 추가하는 법
+
+<img width="1294" alt="2021-11-27_16-52-30" src="https://user-images.githubusercontent.com/42884032/143673220-a37e08bf-86a9-4023-9329-c9638cfee6d3.png">
+
+## 백터 아이콘의 경우 react-native-vector-icons를 사용
+
+- `plist` 파일은 `IOS` 앱의 프로퍼티 리스트(`property lsit`) 파일로 앱의 이름, 아이콘, 버전 등 앱에서 필요한 설정값 저장. 다양한 오픈소스 아이콘이 있는 폰트 파일이 있으며, 사용하고 싶은 것만 추가하면 됨. [[참고자료1 - github](https://github.com/oblador/react-native-vector-icons)], [[참고자료2 - icons](https://oblador.github.io/react-native-vector-icons/)]
+
+### react-native-vector-icons IOS에 적용하기
+
+```bash
+$ yarn add react-native-vector-icons
+
+$ cd ./ios
+$ pod install
+
+# ios/TodoAppRN/Info.plist 맨 아래 부분에 아래 UIAppFonts 속성 추가
+
+# <string>UIInterfaceOrientationLandscapeRight</string>
+# </array>
+# <key>UIViewControllerBasedStatusBarAppearance</key>
+  <key>UIAppFonts</key>
+  <array>
+    <string>MaterialIcons.ttf</string>
+  </array>
+# </dict>
+# </plist>
+
+# 위 속성 추가 후 다시 ios 명령어 실행
+$ yarn ios
+```
+
+### react-native-vector-icons Android에 적용하기
+
+```gradle
+<!-- android/app/build.gradle 파일 맨 아래 추가  -->
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+```
+
+추가 후 다시 커맨드 실행.
+
+```bash
+$ yarn android
+```
+
+### 사용법
+
+아래와 같은 방법으로 사용가능하다. [[참고자료2 - icons](https://oblador.github.io/react-native-vector-icons/)]
+
+```javascript
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+const deleteIcon = <Icon name="delete" size={32} color="red" />;
+```
+
+### Error: react-native-vector-icons/Icon could not be found within the project or in these directories: node_modules
+
+`<Icon name="delete" size={32} color="red" />`를 사용하려고 하니 위 에러가 발생했다. 그럼 콘솔에 아래와 같은 해결 방법이 나타난다.
+
+```bash
+If you are sure the module exists, try these steps:
+ 1. Clear watchman watches: watchman watch-del-all
+ 2. Delete node_modules and run yarn install
+ 3. Reset Metro's cache: yarn start --reset-cache
+ 4. Remove the cache: rm -rf /tmp/metro-*
+```
+
+하지만 저대로 했으나 동일했으며, 알고보니 문제는 저게 아니였다. 자동 `import`를 사용했으나 이게 경로를 잘못 잡아준게 문제였다.
+
+```javascript
+// import { Icon } from 'react-native-vector-icons/Icon'; (x)
+import Icon from 'react-native-vector-icons/MaterialIcons'; (o)
+...
+<Icon name="delete" size={32} color="red" />
+```
+
+## Alert.alert('제목', '내용', '버튼 배열', '옵션')
+
+- `TodoItem.js` 참고.
+- `style`은 `cancel`, `default`, `destructive` 값을 설정할 수 있다. (ios에서만 동작, android 버튼에 스타일 적용은 되지 않는다.)
+- 만약 스타일을 직접 변경하고 싶다면 직접 컴포넌트를 만들어야 한다.
+- 옵션에 `cancelable`의 경우 안드로이드에서 Alert 박스 바깥 영역 또는 Back 버튼을 눌렀을때 Alert가 닫히도록 설정할 수 있다.
+- `onDismisss`는 `Alert`가 닫힐때 호출되는 함수
+
+<img width="1023" alt="2021-11-27_18-07-51" src="https://user-images.githubusercontent.com/42884032/143675273-36d3c120-5d05-4ab5-8980-bd18c5a69c80.png">
