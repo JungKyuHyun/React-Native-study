@@ -5,13 +5,14 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import DateHeader from './components/DateHeader';
 import AppTodo from './components/AppTodo';
 import Empty from './components/Empty';
 import TodoList from './components/TodoList';
+import todoStorage from './storages/todoStorages';
 
 const App = () => {
   const today = new Date();
@@ -20,6 +21,10 @@ const App = () => {
     {id: 2, text: '리액트 네이티브 기초 공부', done: false},
     {id: 3, text: '투두리스트 만들어보기', done: false},
   ]);
+
+  useEffect(() => {
+    todoStorage.get().then(setTodos).catch(console.error);
+  }, []);
 
   const onInsert = text => {
     const nextId =

@@ -2,6 +2,54 @@
 
 `apple slicon mac`에서 `RN` 프로젝트 처음부터 셋업 및 공부용 프로젝트.
 
+## 설치
+
+- xcode
+- android studio
+
+```bash
+$ brew install --cask adoptopenjdk/openjdk/adoptopenjdk8
+$ brew install watchman
+$ sudo gem install cocoapods
+```
+
+### 안드로이드 스튜디오 환경변수 설정
+
+```bash
+# zsh 사용시
+$ vi ~/.zshrc
+
+# 맨 아래에 추가
+# export ANDROID_HOME=$HOME/Library/Android/sdk
+# export PATH=$PATH:$ANDROID_HOME/emulator
+# export PATH=$PATH:$ANDROID_HOME/tools
+# export PATH=$PATH:$ANDROID_HOME/tools/bin
+# export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+### error Failed to launch emulator / ERROR: JAVA_HOME is set to an invalid directory
+
+만약 위와 같은 에러를 만났을 때만 적용하면 된다. 이런 설정에 익숙하지 않아서 그런지 정말 애를 많이 먹었던 부분이다. 정말 많이 찾아봤으나 결국 조금 우회적인 방법으로 해결했다. <br />
+이 우회적인 방법이 맘에 들지 않는다면 다른 방법을 찾아서 하거나, 정상적인 쉬운 방법을 알면 꼭 나중에 업데이트 해놓겠다.
+<br />
+하다하다 안되서 예전 플로터(`flutter`)에서 비슷한 문제를 해결한 적이 있어, 새로산 m1 macbook pro에 뜬금없이 `flutter`를 설치하고 아래의 명령어를 통해 해결했다.
+
+- [참고자료1 - flutter 설치법 공식문서](https://docs.flutter.dev/get-started/install/macos)
+- [참고자료2 - flutter 설치 관련 나의 개인 블로그](https://ajdkfl6445.gitbook.io/study/mobile/flutter/install)
+
+```bash
+$ flutter config --android-studio-dir=/usr/local/android-studio
+```
+
+### apple slicon
+
+`ios simulator`를 실행 전에 `ios` 폴더에 가서 `pod install`을 하면 `You may have encountered a bug in the Ruby interpreter or extension libraries` 같은 에러가 발생하는데, 아래 내용을 확인하고 설치해 주자.
+
+```bash
+$ sudo arch -x86_64 gem install ffi
+$ arch -x86_64 pod install
+```
+
 ## 용어 및 개념
 
 - ppi: `pixcel per inch`의 약자로, 1인치에 몇 px이 들어갈 수 있는지를 의미하는 밀도 단위.
@@ -245,3 +293,30 @@ import Icon from 'react-native-vector-icons/MaterialIcons'; (o)
 - `onDismisss`는 `Alert`가 닫힐때 호출되는 함수
 
 <img width="1023" alt="2021-11-27_18-07-51" src="https://user-images.githubusercontent.com/42884032/143675273-36d3c120-5d05-4ab5-8980-bd18c5a69c80.png">
+
+# AsyncStorage
+
+`RN`에서 사용할 수 있는 `key-value` 형식의 저장소이며 `ios`에서는 네이티브로, `android`에서는 네이티브와 `SQLite`를 기반으로 구현되어 있다. <br />
+브라우저에서 사용하던 `localStorage`와 비슷하지만, `AsyncStorage`는 이름에서도 알 수 있듯이 비동기적으로 작동한다.
+
+```bash
+npm i @react-native-async-storage/async-storage
+```
+
+## 안드로이드에서 AsyncStorage 최대 용량 설정하는 법
+
+너무 많은 데이터를 넣는 것을 방지하기 위해서 기본적으로 `6MB`로 설정되어 있으며, 초과시 오류가 발생한다. 만약 늘리고 싶다면 `android/gradle.properties` 파일에 아래 코드를 추가하면 된다. (참고로 ios의 경우 따로 최대 용량이 설정되어 있지 않다.)
+
+```bash
+# android/gradle.properties
+AsyncStorage_db_size_in_MB=10
+```
+
+## AsyncStorage는 언제 사용해야 하지?
+
+문자열 타입으로만 저장할 수 있기 때문에 데이터가 많아질수록 속도가 느려지며, 최적화를 할 수는 있지만 쉽지 않는 부분이다. 또한 검색, 정렬 등의 기능이 지원되지 않는다. <br />
+따라서 데이터의 규모가 커졌을 때는 `realm`와 `react-native-sqlite-storage`등을 사용할 수 있다. `react-native-sqlite-storage`의 경우 인덱싱을 지원하며, 여러 방식으로 데이터를 저장 및 조회할 수 있다.
+
+# 끝
+
+![image](https://user-images.githubusercontent.com/42884032/143780834-36174f20-5698-4b15-9b1a-b981971cdcd3.png)
